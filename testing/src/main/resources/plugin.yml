@@ -1,0 +1,9 @@
+main: io.github.pepsidawg.enchantmentfun.EnchantmentFun
+name: EnchantmentFun
+version: 1.0.0
+description: Fun Enchantments!
+depend: [EnchantmentAPI]
+commands:
+  testenchant:
+    description: testing enchantment api
+    usage: /testenchant
