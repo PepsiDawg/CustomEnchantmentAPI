@@ -1,1 +1,1 @@
-##Custom Enchantment API 1.12.2
+## Custom Enchantment API 1.12.2
