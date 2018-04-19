@@ -1,4 +1,4 @@
-package io.github.pepsidawg.plugin;
+package io.github.pepsidawg.enchantmentapi;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

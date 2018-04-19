@@ -1,4 +1,4 @@
-package io.github.pepsidawg.plugin.nms.v1_12_R1;
+package io.github.pepsidawg.enchantmentapi.nms.v1_12_R1;
 
 import io.github.pepsidawg.api.NMS;
 import io.github.pepsidawg.api.EnchantmentDetails;

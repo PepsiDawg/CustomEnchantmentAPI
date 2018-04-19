@@ -1,8 +1,8 @@
-package io.github.pepsidawg.plugin;
+package io.github.pepsidawg.enchantmentapi;
 
 import io.github.pepsidawg.api.EnchantmentDetails;
 import io.github.pepsidawg.api.NMS;
-import io.github.pepsidawg.plugin.CustomEnchantmentChangedEvent.EnchantmentChangeReason;
+import io.github.pepsidawg.enchantmentapi.CustomEnchantmentChangedEvent.EnchantmentChangeReason;
 import javafx.util.Pair;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -17,26 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 public class EnchantmentManager {
-    private static EnchantmentManager self;
-    private Map<String, CustomEnchantment> registeredEnchantments;
-    private int currentID;
-    private NMS nmsHandler;
+    private static Map<String, CustomEnchantment> registeredEnchantments = new HashMap<String, CustomEnchantment>();
+    private static int currentID = 100;
+    private static NMS nmsHandler = EnchantmentAPI.getInstance().getNMSHandler();
 
-
-    private EnchantmentManager() {
-        registeredEnchantments = new HashMap<String, CustomEnchantment>();
-        currentID = 100;
-        nmsHandler = EnchantmentAPI.getInstance().getNMSHandler();
-    }
-
-    public static EnchantmentManager getInstance() {
-        if(self == null) {
-            self = new EnchantmentManager();
-        }
-        return self;
-    }
-
-    public void registerEnchantment(CustomEnchantment enchantment) throws Exception {
+    public static void registerEnchantment(CustomEnchantment enchantment) throws Exception {
         if(registeredEnchantments.containsKey(enchantment.getEnchantmentName().toLowerCase())) {
             throw new Exception("Enchantment \"" + enchantment.getDisplayName() + "\" has already been registered!");
         }
@@ -45,7 +30,7 @@ public class EnchantmentManager {
         Bukkit.getLogger().info("Registered enchantment \"" + enchantment.getDisplayName() + "\"");
     }
 
-    public ItemStack enchantItem(ItemStack item, CustomEnchantment enchantment, int level, boolean unsafe) throws Exception{
+    public static ItemStack enchantItem(ItemStack item, CustomEnchantment enchantment, int level, boolean unsafe) throws Exception{
         Map<String, Integer> enchants = nmsHandler.getEnchants(item);
 
         if(!unsafe) {
@@ -79,9 +64,9 @@ public class EnchantmentManager {
         return event.getResult();
     }
 
-    public Pair<ItemStack, Integer> combine(ItemStack target, ItemStack sacrifice, ItemStack result) {
-        Map<String, Integer> targetCustomEnchants = this.nmsHandler.getEnchants(target);
-        Map<String, Integer> sacrificeCustomEnchants = this.nmsHandler.getEnchants(sacrifice);
+    public static Pair<ItemStack, Integer> combine(ItemStack target, ItemStack sacrifice, ItemStack result) {
+        Map<String, Integer> targetCustomEnchants = nmsHandler.getEnchants(target);
+        Map<String, Integer> sacrificeCustomEnchants = nmsHandler.getEnchants(sacrifice);
         int enchCost = 0;
 
         //Check for combines
@@ -120,15 +105,15 @@ public class EnchantmentManager {
                     }
                 }
             }
-            result = this.nmsHandler.setEnchants(result, targetCustomEnchants);
+            result = nmsHandler.setEnchants(result, targetCustomEnchants);
             return new Pair<ItemStack, Integer>(showEnchants(result), enchCost*2);
         }
 
-        target = this.nmsHandler.setEnchants(target, targetCustomEnchants);
+        target = nmsHandler.setEnchants(target, targetCustomEnchants);
         return new Pair<ItemStack, Integer>(showEnchants(target), enchCost*2);
     }
 
-    private int getCombineLevel(int a, int b, int max) {
+    private static int getCombineLevel(int a, int b, int max) {
         int result = 0;
         if(a == b) {
             result = a+1;
@@ -138,7 +123,7 @@ public class EnchantmentManager {
         return (result > max) ? max : result;
     }
 
-    public ItemStack removeEnchant(ItemStack item, CustomEnchantment enchantment) {
+    public static ItemStack removeEnchant(ItemStack item, CustomEnchantment enchantment) {
         Map<String, Integer> enchants = nmsHandler.getEnchants(item);
         enchants.remove(enchantment.getEnchantmentName());
         ItemStack result = nmsHandler.setEnchants(item, enchants);
@@ -151,23 +136,23 @@ public class EnchantmentManager {
         return event.getResult();
     }
 
-    public boolean isCustomEnchantment(String enchantmentName) {
-        return this.registeredEnchantments.containsKey(enchantmentName);
+    public static boolean isCustomEnchantment(String enchantmentName) {
+        return registeredEnchantments.containsKey(enchantmentName);
     }
 
-    public boolean hasCustomEnchantment(ItemStack item) {
+    public static boolean hasCustomEnchantment(ItemStack item) {
         return nmsHandler.getEnchants(item).size() > 0;
     }
 
-    public boolean hasCustomEnchantment(ItemStack item, String enchantmentName) {
+    public static boolean hasCustomEnchantment(ItemStack item, String enchantmentName) {
         return nmsHandler.getEnchants(item).containsKey(enchantmentName);
     }
 
-    public EnchantmentDetails getEnchantmentDetails(ItemStack item, String enchantmentName) {
-        return this.nmsHandler.get(item, enchantmentName);
+    public static EnchantmentDetails getEnchantmentDetails(ItemStack item, String enchantmentName) {
+        return nmsHandler.get(item, enchantmentName);
     }
 
-    public Map<CustomEnchantment, Integer> getCustomEnchantments(ItemStack item) {
+    public static Map<CustomEnchantment, Integer> getCustomEnchantments(ItemStack item) {
         Map<String, Integer> enchants = nmsHandler.getEnchants(item);
         Map<CustomEnchantment, Integer> result = new HashMap<CustomEnchantment, Integer>();
 
@@ -178,15 +163,15 @@ public class EnchantmentManager {
         return result;
     }
 
-    public CustomEnchantment getEnchantByName(String enchantmentName) {
-        return this.registeredEnchantments.get(enchantmentName.toLowerCase());
+    public static CustomEnchantment getEnchantByName(String enchantmentName) {
+        return registeredEnchantments.get(enchantmentName.toLowerCase());
     }
 
-    public Map<String, CustomEnchantment> getRegisteredEnchantments() {
-        return this.registeredEnchantments;
+    public static Map<String, CustomEnchantment> getRegisteredEnchantments() {
+        return registeredEnchantments;
     }
 
-    private ItemStack showEnchants(ItemStack item) {
+    private static ItemStack showEnchants(ItemStack item) {
         Map<CustomEnchantment, Integer> enchants = getCustomEnchantments(item);
         ItemStack result =  item.clone();
         ItemMeta meta = result.getItemMeta();
@@ -201,7 +186,7 @@ public class EnchantmentManager {
         return result;
     }
 
-    public int getNextID() {
+    public static int getNextID() {
         return ++currentID;
     }
 

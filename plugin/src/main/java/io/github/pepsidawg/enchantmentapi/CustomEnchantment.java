@@ -1,10 +1,11 @@
-package io.github.pepsidawg.plugin;
+package io.github.pepsidawg.enchantmentapi;
 
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class CustomEnchantment implements Listener{
@@ -40,6 +41,10 @@ public abstract class CustomEnchantment implements Listener{
 
     public void addConflictingEnchantment(String enchantment) {
         this.conflictsWith.add(enchantment.toLowerCase());
+    }
+
+    public void addAllConflictingEnchantments(Collection<String> enchantments) {
+        this.conflictsWith.addAll(enchantments);
     }
 
     public int getStartingLevel() {

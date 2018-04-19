@@ -1,4 +1,4 @@
-main: io.github.pepsidawg.plugin.EnchantmentAPI
+main: io.github.pepsidawg.enchantmentapitmentapi.EnchantmentAPI
 name: EnchantmentAPI
 version: 1.0.0
 description: Custom enchantments!

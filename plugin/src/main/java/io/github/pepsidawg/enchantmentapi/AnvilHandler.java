@@ -1,4 +1,4 @@
-package io.github.pepsidawg.plugin;
+package io.github.pepsidawg.enchantmentapi;
 
 import javafx.util.Pair;
 import org.bukkit.Bukkit;
@@ -30,20 +30,19 @@ public class AnvilHandler implements Listener {
         ItemStack result = event.getResult();
 
         if(validateItem(target)) {
-            EnchantmentManager manager = EnchantmentManager.getInstance();
             Pair<ItemStack, Integer> combineResult = null;
-            boolean tarEnchanted = manager.hasCustomEnchantment(target);
-            boolean sacEnchanted = manager.hasCustomEnchantment(sacrifice);
+            boolean tarEnchanted = EnchantmentManager.hasCustomEnchantment(target);
+            boolean sacEnchanted = EnchantmentManager.hasCustomEnchantment(sacrifice);
             boolean applyEnchCost = false;
 
             if(sacrifice.getType().equals(Material.ENCHANTED_BOOK) && (tarEnchanted || sacEnchanted)) { //book
-                combineResult = manager.combine(target, sacrifice, result);
+                combineResult = EnchantmentManager.combine(target, sacrifice, result);
                 applyEnchCost = true;
             } else if(target.getType().equals(sacrifice.getType()) && (tarEnchanted || sacEnchanted)) { //repair with same item / combine
-                combineResult = manager.combine(target, sacrifice, result);
+                combineResult = EnchantmentManager.combine(target, sacrifice, result);
                 applyEnchCost = sacEnchanted;
             } else if(tarEnchanted && validateItem(result)) { //repair with mat / rename && valid
-                combineResult = manager.combine(target, sacrifice, result);
+                combineResult = EnchantmentManager.combine(target, sacrifice, result);
             }
 
             if(combineResult != null) {

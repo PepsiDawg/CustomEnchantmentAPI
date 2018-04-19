@@ -1,4 +1,4 @@
-package io.github.pepsidawg.plugin;
+package io.github.pepsidawg.enchantmentapi;
 
 import io.github.pepsidawg.api.NMS;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,7 +14,7 @@ public class EnchantmentAPI extends JavaPlugin {
         self = this;
 
         try {
-            String name = "io.github.pepsidawg.plugin.nms." + version + ".NMSHandler";
+            String name = "io.github.pepsidawg.enchantmentapi.nms." + version + ".NMSHandler";
             Class clazz = Class.forName(name);
 
             if(NMS.class.isAssignableFrom(clazz)) {
