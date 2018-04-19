@@ -43,7 +43,7 @@ public abstract class CustomEnchantment implements Listener{
         this.conflictsWith.add(enchantment.toLowerCase());
     }
 
-    public void addAllConflictingEnchantments(Collection<String> enchantments) {
+    public void addConflictingEnchantments(Collection<String> enchantments) {
         this.conflictsWith.addAll(enchantments);
     }
 
