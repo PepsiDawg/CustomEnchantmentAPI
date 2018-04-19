@@ -21,38 +21,19 @@ public class EnchantmentManager {
     private static int currentID = 100;
     private static NMS nmsHandler = EnchantmentAPI.getInstance().getNMSHandler();
 
-    public static void registerEnchantment(CustomEnchantment enchantment) throws Exception {
-        if(registeredEnchantments.containsKey(enchantment.getEnchantmentName().toLowerCase())) {
-            throw new Exception("Enchantment \"" + enchantment.getDisplayName() + "\" has already been registered!");
+    public static void registerEnchantment(CustomEnchantment... enchantments) {
+        for(CustomEnchantment enchantment : enchantments) {
+            if (registeredEnchantments.containsKey(enchantment.getEnchantmentName().toLowerCase())) {
+                Bukkit.getLogger().warning("Enchantment \"" + enchantment.getDisplayName() + "\" has already been registered!");
+            }
+            registeredEnchantments.put(enchantment.getEnchantmentName().toLowerCase(), enchantment);
+            Bukkit.getPluginManager().registerEvents(enchantment, EnchantmentAPI.getInstance());
+            Bukkit.getLogger().info("Registered enchantment \"" + enchantment.getDisplayName() + "\"");
         }
-        registeredEnchantments.put(enchantment.getEnchantmentName().toLowerCase(), enchantment);
-        Bukkit.getPluginManager().registerEvents(enchantment, EnchantmentAPI.getInstance());
-        Bukkit.getLogger().info("Registered enchantment \"" + enchantment.getDisplayName() + "\"");
     }
 
-    public static ItemStack enchantItem(ItemStack item, CustomEnchantment enchantment, int level, boolean unsafe) throws Exception{
+    public static ItemStack addUnsafeEnchantment(ItemStack item, CustomEnchantment enchantment, int level) {
         Map<String, Integer> enchants = nmsHandler.getEnchants(item);
-
-        if(!unsafe) {
-            if(!enchantment.canEnchantItem(item)) {
-                throw new Exception("Item can not be enchanted with " + enchantment.getDisplayName());
-            }
-
-            if(level < enchantment.getStartingLevel() || level > enchantment.getMaxLevel()) {
-                throw new Exception("Item enchantment level out of accepted level range! Expected " + enchantment.getStartingLevel() + "->" + enchantment.getMaxLevel());
-            }
-            for(Map.Entry<CustomEnchantment, Integer> entry : getCustomEnchantments(item).entrySet()) {
-                if(enchantment.conflicts(entry.getKey().getEnchantmentName())) {
-                    throw new Exception(enchantment.getDisplayName() + " conflicts with " + entry.getKey().getDisplayName() + "! Could not enchant!");
-                }
-            }
-
-            for(Map.Entry<Enchantment, Integer> entry : item.getEnchantments().entrySet()) {
-                if(enchantment.conflicts(entry.getKey().getName())) {
-                    throw new Exception(enchantment.getDisplayName() + " conflicts with " + entry.getKey().getName() + "! Could not enchant!");
-                }
-            }
-        }
 
         enchants.put(enchantment.getEnchantmentName(), level);
         ItemStack result = nmsHandler.setEnchants(item, enchants);
@@ -62,6 +43,28 @@ public class EnchantmentManager {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         return event.getResult();
+    }
+
+    public static ItemStack addEnchantment(ItemStack item, CustomEnchantment enchantment, int level) throws Exception {
+        if(!enchantment.canEnchantItem(item)) {
+            throw new Exception("Item can not be enchanted with " + enchantment.getDisplayName());
+        }
+
+        if(level < enchantment.getStartingLevel() || level > enchantment.getMaxLevel()) {
+            throw new Exception("Item enchantment level out of accepted level range! Expected " + enchantment.getStartingLevel() + "->" + enchantment.getMaxLevel());
+        }
+        for(Map.Entry<CustomEnchantment, Integer> entry : getCustomEnchantments(item).entrySet()) {
+            if(enchantment.conflicts(entry.getKey().getEnchantmentName())) {
+                throw new Exception(enchantment.getDisplayName() + " conflicts with " + entry.getKey().getDisplayName() + "! Could not enchant!");
+            }
+        }
+
+        for(Map.Entry<Enchantment, Integer> entry : item.getEnchantments().entrySet()) {
+            if(enchantment.conflicts(entry.getKey().getName())) {
+                throw new Exception(enchantment.getDisplayName() + " conflicts with " + entry.getKey().getName() + "! Could not enchant!");
+            }
+        }
+        return addUnsafeEnchantment(item, enchantment, level);
     }
 
     public static Pair<ItemStack, Integer> combine(ItemStack target, ItemStack sacrifice, ItemStack result) {
