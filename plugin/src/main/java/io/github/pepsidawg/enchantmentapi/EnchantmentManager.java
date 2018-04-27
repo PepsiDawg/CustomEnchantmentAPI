@@ -32,6 +32,15 @@ public class EnchantmentManager {
         }
     }
 
+    public static ItemStack addUnsafeEnchantment(ItemStack item, String enchantment, int level) {
+        if(!isCustomEnchantment(enchantment)) {
+            Bukkit.getLogger().warning("Enchantment " + enchantment + " not found! Skipping enchanting");
+        }
+
+        CustomEnchantment customEnchantment = getEnchantByName(enchantment);
+        return addUnsafeEnchantment(item, customEnchantment, level);
+    }
+
     public static ItemStack addUnsafeEnchantment(ItemStack item, CustomEnchantment enchantment, int level) {
         Map<String, Integer> enchants = nmsHandler.getEnchants(item);
 
@@ -43,6 +52,15 @@ public class EnchantmentManager {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         return event.getResult();
+    }
+
+    public static ItemStack addEnchantment(ItemStack item, String enchantment, int level) throws Exception {
+        if(!isCustomEnchantment(enchantment)) {
+            Bukkit.getLogger().warning("Enchantment " + enchantment + " not found! Skipping enchanting");
+        }
+
+        CustomEnchantment customEnchantment = getEnchantByName(enchantment);
+        return addEnchantment(item, customEnchantment, level);
     }
 
     public static ItemStack addEnchantment(ItemStack item, CustomEnchantment enchantment, int level) throws Exception {
